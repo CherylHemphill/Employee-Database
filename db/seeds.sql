@@ -1,3 +1,4 @@
+-- Active: 1687286696071@@127.0.0.1@3306@employee_db
 USE employee_db;
 
 -- Insert example departments
@@ -13,7 +14,7 @@ INSERT INTO role (id, title, salary, department_id)
 VALUES (1, 'Designer Manager', 60000, 1),
        (2, 'Junior Designer', 45000, 1),
        (3, 'Marketing Manager', 45000, 2),
-       (4, 'Marketing Representative', 40000, 2)
+       (4, 'Marketing Representative', 40000, 2),
        (5, 'Front-end Developer', 60000, 3),
        (6, 'Back-end Developer', 66000, 3),
        (7, 'Lead Developer', 78000, 3),
@@ -27,7 +28,7 @@ INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
 VALUES (1, 'Marilyn', 'Monroe', 1, NULL),
        (2, 'Abraham', 'Lincoln', 2, 1),
        (3, 'Elivs', 'Presley', 3, NULL),
-       (4, 'Jack', 'Sparrow', 4, 3)
+       (4, 'Jack', 'Sparrow', 4, 3),
        (5, 'Paul', 'McCartney', 5, 7),
        (6, 'David', 'Bowie', 6, 7),
        (7, 'Franklin', 'Roosevelt', 7, NULL),
