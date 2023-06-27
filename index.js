@@ -36,20 +36,21 @@ const promptUser = () => {
       .then((selection) => {
         if (selection.view === 'View All Departments') {
           getAllDepartments().then((departments) => {
-            console.log(departments);
+            // console.log(departments);
           });
         } else if (selection.view === 'View All Roles') {
           getAllRoles().then((roles) => {
-            console.log(roles);
+            // console.log(roles);
           });
         } else if (selection.view === 'View All Employees') {
           getAllEmployees().then((employees) => {
-            console.log(employees);
+            // console.log(employees);
           });
         } else if (selection.view === 'Add A Department') {
-          addDepartment().then((newDepartment) => {
-            console.log(newDepartment);
-          });
+          addDepartment();
+          // .then((newDepartment) => {
+          //   console.log(newDepartment);
+          // });
         } else if (selection.view === 'Add A Role') {
           addRole().then((newRole) => {
             console.log(newRole);
@@ -76,152 +77,176 @@ const promptUser = () => {
 async function getAllDepartments() {
   try {
     const query = 'SELECT * FROM department';
-    const [rows] = await pool.query(query); // Use await with async/await
+    const [rows] = await pool.query(query);
     console.table(rows);
     return rows;
   } catch (error) {
     throw error;
   }
-}
+};
 
 // fetch and display all roles
 async function getAllRoles() {
   try {
     const query = 'SELECT * FROM role';
-    const [rows] = await pool.query(query); // Use await with async/await
+    const [rows] = await pool.query(query); 
+    console.table(rows);
     return rows;
   } catch (error) {
     throw error;
   }
-}
+};
 
 // fetch and display all employees
 async function getAllEmployees() {
   try {
     const query = 'SELECT * FROM employee';
-    const [rows] = await pool.query(query); // Use await with async/await
+    const [rows] = await pool.query(query); 
+    console.table(rows);
     return rows;
   } catch (error) {
     throw error;
   }
-}
+};
 
 // fetch and add a department
-
-async function addDepartment() {
+function addDepartment() {
   try {
-    const department = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Enter the name of the new department:',
-      },
-    ]);
-
-    const query = "INSERT INTO department (name) VALUES (?)";
-    const [result] = await pool.query(query, [department.name]); 
-    console.log('Department added successfully.');
-    return result;
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'name',
+          message: 'Enter the name of the new department:',
+        },
+      ])
+      .then((department) => {
+        const query = "INSERT INTO department (name) VALUES (?)";
+        return pool.query(query, [department.name]);
+      })
+      .then((result) => {
+        console.log('Department added successfully.');
+        return result;
+      });
   } catch (error) {
     throw error;
   }
-}
+};
+
+// async function addDepartment() {
+//   try {
+//     const departmentList = await getAllDepartments();
+
+//     const department = await inquirer.prompt([
+//       {
+//         type: 'input',
+//         name: 'name',
+//         message: 'Enter the name of the new department:',
+//       },
+//       {
+//         type: 'input',
+//         name: 'id',
+//         message: 'What is the new department id?',
+//         choices: departmentList.map((department) => ({
+//           name: department.name,
+//           value: department.id,
+//         })),
+//       },
+//     ]);
+
+//     const query = "INSERT INTO department (name) VALUES (?)";
+//     const [result] = await pool.query(query, [department.name]); 
+//     console.log('Department added successfully.');
+//     return result;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 // fetch and add a role
-function addRole() {
+async function addRole() {
   try {
-    return getAllDepartments().then((departments) => {
-      return inquirer.prompt([
-        {
-          type: 'input',
-          name: 'title',
-          message: 'Enter the role title:'
-        },
-        {
-          type: 'input',
-          name: 'salary',
-          message: 'Enter the role salary',
-        },
-        {
-          type: 'list',
-          name: 'departmentId',
-          message: 'Select the department for the role:',
-          choices: departments.map((department) => ({
-            name: department.name,
-            value: department.id,
-          })),
-        },
-      ]);
-    }).then((role) => {
-      const query = 'INSERT INTO role SET title = ?';
-      return pool.query(query, role.title);
-    }).then((result) => {
-      console.log('New role added successfully.');
-      return result;
-    });
+    const departments = await getAllDepartments();
+
+    const role = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'title',
+        message: 'Enter the role title:',
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: 'Enter the role salary:',
+      },
+      {
+        type: 'list',
+        name: 'departmentId',
+        message: 'Select the department for the role:',
+        choices: departments.map((department) => ({
+          name: department.name,
+          value: department.id,
+        })),
+      },
+    ]);
+
+    const query = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
+    const [result] = await pool.query(query, [role.title, role.salary, role.departmentId]);
+    console.log('New role added successfully.');
+    return result;
   } catch (error) {
     throw error;
   }
 };
 
 
-// fetch and add an employee
-function addEmployee() {
-  try {
-    return getAllRoles().then((roles) => {
-      return inquirer.prompt([
-        {
-          type: 'input',
-          name: 'first_name',
-          message: 'Enter the new employee\'s first name:'
-        },
-        {
-          type: 'input',
-          name: 'last_name',
-          message: 'Enter the new employee\'s last name:'
-        },
-        {
-          type: 'list',
-          name: 'roleId',
-          message: 'Select the role for the employee:',
-          choices: roles.map((role) => ({
-            name: role.title,
-            value: role.id,
-          })),
-        },
-      ]);
-    }).then((employee) => {
-      return getAllEmployees().then((employees) => {
-        return inquirer.prompt([
-          {
-            type: 'list',
-            name: 'managerId',
-            message: 'Select the manager for the employee:',
-            choices: employees.map((employee) => ({
-              name: `${employee.firstName} ${employee.lastName}`,
-              value: employee.id,
-            })),
-          },
-        ]);
-      }).then((manager) => {
-        const employeeData = {
-          first_name: employee.first_name,
-          last_name: employee.last_name,
-          role_id: employee.roleId,
-          manager_id: manager.managerId
-        };
 
-        const query = 'INSERT INTO employee SET ?';
-        return pool.query(query, employeeData);
-      });
-    }).then((result) => {
-      console.log('Employee added successfully.');
-      return result;
-    });
+// fetch and add an employee
+async function addEmployee() {
+  try {
+    const roles = await getAllRoles();
+    const employees = await getAllEmployees();
+
+    const employee = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'first_name',
+        message: "Enter the new employee's first name:",
+      },
+      {
+        type: 'input',
+        name: 'last_name',
+        message: "Enter the new employee's last name:",
+      },
+      {
+        type: 'list',
+        name: 'role_id',
+        message: 'Select the role for the employee:',
+        choices: roles.map((role) => ({
+          name: role.title,
+          value: role.id,
+        })),
+      },
+      {
+        type: 'list',
+        name: 'manager_id',
+        message: 'Select the manager for the employee:',
+        choices: employees.map((employee) => ({
+          name: `${employee.first_name} ${employee.last_name}`,
+          value: employee.id,
+        })),
+      },
+    ]);
+
+    const query = 'INSERT INTO employee SET ?';
+    const [result] = await pool.query(query, employee);
+    console.log('Employee added successfully.');
+    return result;
   } catch (error) {
     throw error;
   }
-}
+};
+
 
 //fetch and update an employees role
 async function updateEmployeeRole() {
@@ -257,7 +282,7 @@ async function updateEmployeeRole() {
   } catch (error) {
     throw error;
   }
-}
+};
 
 promptUser();
 // pool.end();
