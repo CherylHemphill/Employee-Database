@@ -16,7 +16,8 @@ This application helps companies easily manage employees, roles, and departments
 This application uses node and inquirer to manage databases in MySQL. Add dependencies by running the command <strong> npm install </strong> <br> Add your MySQL credentials to the .env file. <br>Open the termanial to run the command <strong> node index.js </strong>. Select the option that you wish to perform.
 
 ## Usage
-![alt text](assets/images/EmpDBVideo.gif)
+
+![EmpDBVideo](https://github.com/CherylHemphill/Employee-Database/assets/126039394/c2a55a5e-9269-4c06-b9a7-c8c1b4c5f512)
 
 ## License
 
